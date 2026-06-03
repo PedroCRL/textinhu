@@ -1,0 +1,4 @@
+indice,cultura,forma,param1,param2,area_m2,area_ha
+,cafe,circulo,10.0,,314.1592653589793,0.031415926535897934
+,soja,retangulo,100.0,100.0,10000.0,1.0
+,soja,retangulo,15000.0,30000.0,450000000.0,45000.0
