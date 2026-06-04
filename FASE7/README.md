@@ -24,23 +24,171 @@ FASE7/
 
 ---
 
-## Como instalar
+## Guia de Instalação Completo
 
-Antes de tudo, instale a dependência do launcher:
+> Siga os passos na ordem. Não pule etapas. Uma máquina sem nada instalado deve seguir do passo 1 ao 6 antes de rodar qualquer fase.
+
+---
+
+### 1. Python 3.11
+
+**Download:** https://www.python.org/downloads/
+
+- Clique em **"Download Python 3.11.x"**
+- Na tela de instalação, marque obrigatoriamente **"Add Python to PATH"**
+- Clique em **"Install Now"** e aguarde
+
+Verificar instalação — abra o terminal e execute:
+
+```bash
+python --version
+pip --version
+```
+
+Ambos devem retornar versões sem erro.
+
+---
+
+### 2. Git
+
+**Download:** https://git-scm.com/download/win
+
+- Execute o instalador e deixe todas as opções no padrão
+- Clique "Next" até finalizar
+
+```bash
+git --version
+```
+
+---
+
+### 3. Visual Studio Code (recomendado)
+
+**Download:** https://code.visualstudio.com/
+
+- Execute o instalador
+- Marque **"Add to PATH"** durante a instalação
+
+**Extensões obrigatórias** — pressione `Ctrl+Shift+X` dentro do VSCode, pesquise e instale:
+
+| Extensão | ID | Para quê |
+|---|---|---|
+| Python | `ms-python.python` | Rodar arquivos .py |
+| Jupyter | `ms-toolsai.jupyter` | Abrir notebooks .ipynb |
+| R | `REditorSupport.r` | Rodar scripts .R |
+
+---
+
+### 4. R 4.x
+
+Necessário para **FASE 1** (weather_api.R, analysis.r) e **FASE 2** (codigodeanalise.r).
+
+**Download:** https://cran.r-project.org/bin/windows/base/
+
+- Baixe o instalador R 4.x para Windows e execute com as opções padrão
+
+```bash
+Rscript --version
+```
+
+Abra o R e instale os pacotes necessários:
+
+```r
+install.packages(c("httr", "jsonlite", "ggplot2", "dplyr", "readr"))
+```
+
+---
+
+### 5. Oracle Instant Client
+
+Necessário **apenas para FASE 2** — módulo de Gestão de Sementes com banco Oracle.
+
+**Download:** https://www.oracle.com/database/technologies/instant-client/winx64-64-downloads.html
+
+- Baixe o pacote **"Basic Package"** (.zip)
+- Extraia para `C:\oracle\instantclient`
+- Adicione o caminho à variável de ambiente PATH:
+  1. Pesquise "variáveis de ambiente" no menu Iniciar
+  2. Em "Variáveis do Sistema" → `Path` → "Editar" → "Novo"
+  3. Cole `C:\oracle\instantclient` e clique OK em tudo
+  4. Feche e reabra o terminal
+
+```bash
+python -c "import oracledb; print('Oracle OK')"
+```
+
+> Você também precisará de acesso a um servidor Oracle (local ou Oracle Cloud Free Tier). Configure as credenciais no arquivo `FASE2/PythonAlem/database.py`.
+
+---
+
+### 6. Ambiente virtual e pacotes Python
+
+Abra o terminal na **pasta raiz do projeto** e execute os comandos abaixo em sequência:
+
+**Criar o ambiente virtual:**
+
+```bash
+python -m venv .venv
+```
+
+**Ativar — PowerShell:**
+
+```powershell
+.venv\Scripts\Activate.ps1
+```
+
+**Ativar — CMD:**
+
+```cmd
+.venv\Scripts\activate.bat
+```
+
+> Se o PowerShell bloquear a ativação, execute antes:
+> ```powershell
+> Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+> ```
+
+Após ativar, o terminal exibirá `(.venv)` no início da linha.
+
+**Instalar todas as dependências:**
 
 ```bash
 pip install -r requirements.txt
 ```
 
-> Isso instala o Streamlit, que é a biblioteca usada para criar o dashboard visual.
+Esse comando instala automaticamente:
+
+| Pacote | Versão mínima | Para quê |
+|---|---|---|
+| `pandas` | 2.0.0 | Manipulação de dados — todas as fases |
+| `numpy` | 1.24.0 | Cálculos numéricos |
+| `matplotlib` | 3.7.0 | Geração de gráficos |
+| `seaborn` | 0.12.0 | Gráficos estatísticos |
+| `scikit-learn` | 1.3.0 | Machine Learning — FASE 3 e 4 |
+| `scipy` | 1.10.0 | Ciência de dados |
+| `oracledb` | 1.3.0 | Banco de dados Oracle — FASE 2 |
+| `streamlit` | 1.28.0 | Dashboard web — FASE 4 e 7 |
+| `jupyter` | 1.0.0 | Notebooks interativos — FASE 5 e 6 |
+| `notebook` | 7.0.0 | Interface Jupyter no navegador |
+| `ipykernel` | 6.25.0 | Kernel Python para Jupyter |
+| `ipython` | 8.14.0 | Terminal Python avançado |
+| `openpyxl` | 3.1.0 | Leitura de arquivos .xlsx |
+| `Pillow` | 10.0.0 | Processamento de imagens |
+| `tqdm` | 4.65.0 | Barra de progresso |
+| `PyYAML` | 6.0.0 | Arquivos de configuração |
+| `requests` | 2.28.0 | Chamadas HTTP e APIs externas |
 
 ---
 
 ## Como usar
 
-### Opção 1 — Terminal (mais simples)
+Com o ambiente virtual ativado, entre na pasta `FASE7/`:
 
-Abra o terminal na pasta `FASE7/` e rode:
+```bash
+cd FASE7
+```
+
+### Opção 1 — Terminal (mais simples)
 
 ```bash
 # Abre o menu interativo com todas as fases
@@ -106,7 +254,7 @@ Depois acesse **http://localhost:8501** no navegador. O dashboard mostra todas a
 | 5   | Previsão de Rendimento (Cloud)    | Jupyter    | —     |
 | 6   | Visão Computacional (YOLO)        | Jupyter    | —     |
 
-> **Atenção:** A Fase 3 requer as bibliotecas `pandas`, `scikit-learn`, `matplotlib` e `seaborn` instaladas. Instale com `pip install pandas scikit-learn matplotlib seaborn`.
+> **FASE 5 e FASE 6 — Alternativa via Google Colab:** acesse https://colab.research.google.com, clique em "Fazer upload de notebook" e selecione o arquivo `.ipynb` da fase correspondente. Nesse caso, não é necessária nenhuma instalação local para essas fases.
 
 ---
 
@@ -114,12 +262,12 @@ Depois acesse **http://localhost:8501** no navegador. O dashboard mostra todas a
 
 O sistema suporta 4 tipos de execução diferentes:
 
-| Tipo         | Como roda                                   | Exemplo de uso           |
-|--------------|---------------------------------------------|--------------------------|
-| `cli_python` | Abre no próprio terminal                    | Fases 1, 2a, 4t          |
-| `streamlit`  | Abre no navegador (nova aba)                | Fases 4d, 7 (dashboard)  |
-| `r_script`   | Roda via Rscript (requer R instalado)       | Fases 2b, 2c             |
-| `jupyter`    | Abre o Jupyter Notebook no navegador        | Fases 3, 5, 6            |
+| Tipo | Como roda | Exemplo de uso |
+|---|---|---|
+| `cli_python` | Abre no próprio terminal | Fases 1, 2a, 4t |
+| `streamlit` | Abre no navegador (nova aba) | Fases 4d, 7 (dashboard) |
+| `r_script` | Roda via Rscript (requer R instalado) | Fases 2b, 2c |
+| `jupyter` | Abre o Jupyter Notebook no navegador | Fases 3, 5, 6 |
 
 ---
 
@@ -164,23 +312,11 @@ O `config.json` é o coração do sistema. Qualquer mudança no projeto (nome, e
 
 ---
 
-## Requisitos por tipo de fase
-
-| O que precisa | Para qual tipo |
-|---------------|---------------|
-| Python 3.10+  | Tudo          |
-| `pip install streamlit` | Fases Streamlit e o dashboard |
-| R + Rscript no PATH | Fases R Script |
-| `pip install jupyter` | Fases Jupyter |
-| Oracle Client + cx_Oracle | Fase 2a |
-
----
-
 ## Fluxo de uso recomendado
 
 Para quem está abrindo o projeto pela primeira vez:
 
-1. Instale as dependências: `pip install -r requirements.txt`
+1. Siga o **Guia de Instalação Completo** acima (passos 1 a 6)
 2. Rode `python run.py` para ver o menu
 3. Comece pela Fase 1 para entender o fluxo básico
 4. Para as análises de ML, rode a Fase 4t primeiro (treina os modelos) e depois a 4d (dashboard)
