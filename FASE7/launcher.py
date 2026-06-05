@@ -110,6 +110,13 @@ def launch(phase: dict):
         st.error(f"Tipo '{phase['type']}' não suportado.")
         return
     flags = subprocess.CREATE_NEW_CONSOLE if sys.platform == "win32" else 0
+    # Fases que encerram (R, Python-CLI) fechariam a janela nova assim que o
+    # processo termina, sem o usuário ver o resultado. No Windows, envolvemos
+    # com 'cmd /c ... & pause' para a janela aguardar uma tecla antes de fechar.
+    # Servidores (streamlit/jupyter) continuam rodando, então ficam de fora —
+    # assim o botão Parar continua agindo direto sobre o processo correto.
+    if sys.platform == "win32" and phase["type"] in ("cli_python", "r_script"):
+        cmd = ["cmd", "/c", *cmd, "&", "pause"]
     proc  = subprocess.Popen(cmd, cwd=cwd, creationflags=flags, env=CHILD_ENV)
     _procs()[str(phase["id"])] = proc
 
