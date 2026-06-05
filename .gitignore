@@ -1,0 +1,6 @@
+# Bytecode Python
+__pycache__/
+*.pyc
+
+# Gráficos gerados automaticamente pela Fase 3
+FASE3/graficos/
