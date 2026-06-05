@@ -8,6 +8,7 @@ Uso:
   python run.py --list      → lista todas as fases disponíveis
 """
 import argparse
+import os
 import subprocess
 import sys
 import json
@@ -20,6 +21,12 @@ sys.stderr.reconfigure(encoding="utf-8")
 BASE_DIR = Path(__file__).parent.resolve()
 ROOT_DIR = BASE_DIR.parent
 CONFIG   = BASE_DIR / "config.json"
+
+# Garante que as fases-filhas (subprocessos) escrevam em UTF-8. Sem isso, no
+# Windows o stdout do filho usa cp1252 e qualquer print com emoji/acento (ex.:
+# "✓", "🏆", "°") quebra com UnicodeEncodeError. O reconfigure acima vale só
+# para este processo; os filhos herdam um stream novo, então passamos via env.
+CHILD_ENV = {**os.environ, "PYTHONUTF8": "1", "PYTHONIOENCODING": "utf-8"}
 
 
 def load_config() -> dict:
@@ -91,13 +98,13 @@ def run_phase(phase: dict):
     try:
         if phase["type"] == "streamlit":
             port = phase.get("port", 8501)
-            proc = subprocess.Popen(cmd, cwd=cwd)
+            proc = subprocess.Popen(cmd, cwd=cwd, env=CHILD_ENV)
             print(f"  Dashboard disponível em: http://localhost:{port}")
             print("  Pressione Ctrl+C para encerrar.\n")
             webbrowser.open(f"http://localhost:{port}")
             proc.wait()
         else:
-            subprocess.run(cmd, cwd=cwd)
+            subprocess.run(cmd, cwd=cwd, env=CHILD_ENV)
     except FileNotFoundError as exc:
         print(f"  Erro: executável não encontrado — {exc}")
         print("  Verifique se o programa está instalado e no PATH.")
@@ -118,7 +125,8 @@ def open_dashboard():
     print("     Acesse: http://localhost:8501\n")
     proc = subprocess.Popen(
         [sys.executable, "-m", "streamlit", "run", str(launcher),
-         "--server.port", "8501"]
+         "--server.port", "8501"],
+        env=CHILD_ENV,
     )
     webbrowser.open("http://localhost:8501")
     try:

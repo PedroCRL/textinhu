@@ -7,6 +7,7 @@ Uso:  streamlit run launcher.py
 import streamlit as st
 import subprocess
 import json
+import os
 import sys
 from pathlib import Path
 from datetime import datetime
@@ -14,6 +15,11 @@ from datetime import datetime
 BASE_DIR = Path(__file__).parent.resolve()
 ROOT_DIR = BASE_DIR.parent
 CONFIG   = BASE_DIR / "config.json"
+
+# Subprocessos das fases devem escrever em UTF-8. No Windows o stdout do filho
+# usa cp1252 por padrão e prints com emoji/acento ("✓", "🏆", "°") quebram com
+# UnicodeEncodeError. Passamos a codificação via env para todas as fases.
+CHILD_ENV = {**os.environ, "PYTHONUTF8": "1", "PYTHONIOENCODING": "utf-8"}
 
 # ── Config ─────────────────────────────────────────────────────────────────────
 def load_config() -> dict:
@@ -104,7 +110,7 @@ def launch(phase: dict):
         st.error(f"Tipo '{phase['type']}' não suportado.")
         return
     flags = subprocess.CREATE_NEW_CONSOLE if sys.platform == "win32" else 0
-    proc  = subprocess.Popen(cmd, cwd=cwd, creationflags=flags)
+    proc  = subprocess.Popen(cmd, cwd=cwd, creationflags=flags, env=CHILD_ENV)
     _procs()[str(phase["id"])] = proc
 
 def stop(pid: str):
