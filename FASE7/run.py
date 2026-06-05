@@ -63,7 +63,11 @@ def build_cmd(phase: dict) -> tuple[list, str]:
     if ptype == "cli_python":
         cmd = [sys.executable, str(path)]
     elif ptype == "streamlit":
-        cmd = [sys.executable, "-m", "streamlit", "run", str(path)]
+        # --server.headless=true impede o Streamlit de abrir o navegador sozinho;
+        # quem abre a aba (uma só) é o webbrowser.open() em run_phase(). Sem isso,
+        # abririam duas abas: a do Streamlit + a nossa.
+        cmd = [sys.executable, "-m", "streamlit", "run", str(path),
+               "--server.headless=true"]
         if port:
             cmd += ["--server.port", str(port)]
     elif ptype == "r_script":
@@ -125,7 +129,7 @@ def open_dashboard():
     print("     Acesse: http://localhost:8501\n")
     proc = subprocess.Popen(
         [sys.executable, "-m", "streamlit", "run", str(launcher),
-         "--server.port", "8501"],
+         "--server.port", "8501", "--server.headless=true"],
         env=CHILD_ENV,
     )
     webbrowser.open("http://localhost:8501")
