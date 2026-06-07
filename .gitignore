@@ -2,5 +2,8 @@
 __pycache__/
 *.pyc
 
+# Checkpoints do Jupyter
+.ipynb_checkpoints/
+
 # Gráficos gerados automaticamente pela Fase 3
 FASE3/graficos/

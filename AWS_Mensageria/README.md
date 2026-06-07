@@ -116,30 +116,14 @@ Na busca do console, digite **`SNS`** → **Simple Notification Service**.
 ### 2) Criar o Tópico
 Menu **Tópicos → Criar tópico** → tipo **Standard** → nome `alertas-farmtech`.
 
-<p align="center">
-  <img src="assets/01-criar-topico.png" alt="Criação do tópico SNS" width="90%">
-</p>
-
 ### 3) Criar a assinatura de e-mail
 No tópico → **Criar assinatura** → protocolo **Email** → informe o e-mail do funcionário.
-
-<p align="center">
-  <img src="assets/02-criar-assinatura.png" alt="Assinatura de e-mail no SNS" width="90%">
-</p>
 
 ### 4) Confirmar a inscrição
 A AWS envia um e-mail — clique em **Confirm subscription**. O status muda para **Confirmed**.
 
-<p align="center">
-  <img src="assets/03-confirmar-email.png" alt="Confirmação da assinatura" width="90%">
-</p>
-
 ### 5) Copiar o ARN do tópico
 Ex.: `arn:aws:sns:us-east-1:891524684430:alertas-farmtech`.
-
-<p align="center">
-  <img src="assets/04-arn-topico.png" alt="ARN do tópico SNS" width="90%">
-</p>
 
 ---
 
