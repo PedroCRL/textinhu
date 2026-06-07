@@ -214,8 +214,14 @@ Valores lidos:
 -- Mensagem automatica enviada via Amazon SNS (infra AWS - Fase 5) --
 ```
 
+Prévia da caixa de entrada do funcionário com os alertas e suas ações
+corretivas (7 leituras fora da faixa, cada uma com a ação recomendada):
+
 <p align="center">
-  <img src="assets/06-email-recebido.png" alt="E-mail de alerta recebido" width="90%">
+  <img src="assets/emailrecebido01.jpeg" alt="Alertas de e-mail - parte 1" width="90%">
+  <img src="assets/emailrecebido02.jpeg" alt="Alertas de e-mail - parte 2" width="90%">
+  <img src="assets/emailrecebido03.jpeg" alt="Alertas de e-mail - parte 3" width="90%">
+  <img src="assets/emailrecebido04.jpeg" alt="Alertas de e-mail - parte 4" width="90%">
 </p>
 
 ---
