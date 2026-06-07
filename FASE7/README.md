@@ -94,7 +94,7 @@ Rscript --version
 Abra o R e instale os pacotes necessários:
 
 ```r
-install.packages(c("httr", "jsonlite", "ggplot2", "dplyr", "readr"))
+install.packages(c("httr", "jsonlite", "ggplot2", "dplyr", "readr"), repos="https://cran.r-project.org")
 ```
 
 ---

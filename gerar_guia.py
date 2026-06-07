@@ -335,7 +335,7 @@ add_divider()
 
 add_heading("2.5 Instalar pacotes R", level=2, color="2E7D32")
 add_para("Abra o programa R (ou RStudio se tiver instalado) e execute:")
-add_code('install.packages(c("httr", "jsonlite", "ggplot2", "dplyr", "readr"))')
+add_code('install.packages(c("httr", "jsonlite", "ggplot2", "dplyr", "readr"), repos="https://cran.r-project.org")')
 add_para("Confirme a instalação quando solicitado.", italic=True, indent=True)
 
 # ════════════════════════════════════════════════════════════════════════════

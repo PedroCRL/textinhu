@@ -97,10 +97,21 @@ Enquanto isso, é possível **demonstrar e printar tudo sem AWS** com o modo
 
 ## ⚙️ Parte 1 — Configurar a AWS (console)
 
-> Conta AWS do grupo, região **Ohio (`us-east-2`)**.
+> **Ambiente usado na entrega:** AWS Academy **Learner Lab** (fornecido pela
+> FIAP), região **N. Virgínia (`us-east-1`)**. A região do Learner Lab fica
+> travada em `us-east-1` — crie o tópico, a assinatura e rode o script **todos
+> nessa mesma região**, senão o tópico "some".
+
+### 0) Abrir o console pelo Learner Lab
+No Canvas: módulo **"Laboratório de aprendizagem da AWS Academy" → Iniciar os
+laboratórios** → **Start Lab** → espere a bolinha ao lado de **AWS** ficar
+**verde** 🟢 → clique em **AWS** para abrir o console.
 
 ### 1) Abrir o Amazon SNS
 Na busca do console, digite **`SNS`** → **Simple Notification Service**.
+
+> ⚠️ O Learner Lab pode já ter um tópico de outro módulo (ex.: `RedshiftSNS`).
+> **Ignore-o** e crie o tópico próprio do projeto no passo seguinte.
 
 ### 2) Criar o Tópico
 Menu **Tópicos → Criar tópico** → tipo **Standard** → nome `alertas-farmtech`.
@@ -124,7 +135,7 @@ A AWS envia um e-mail — clique em **Confirm subscription**. O status muda para
 </p>
 
 ### 5) Copiar o ARN do tópico
-Ex.: `arn:aws:sns:us-east-2:410244537035:alertas-farmtech`.
+Ex.: `arn:aws:sns:us-east-1:891524684430:alertas-farmtech`.
 
 <p align="center">
   <img src="assets/04-arn-topico.png" alt="ARN do tópico SNS" width="90%">
@@ -132,28 +143,59 @@ Ex.: `arn:aws:sns:us-east-2:410244537035:alertas-farmtech`.
 
 ---
 
-## 💻 Parte 2 — Executar (quando a conta AWS estiver pronta)
+## 💻 Parte 2 — Executar o script (Windows / Learner Lab)
 
-> Sugestão: usar o **AWS CloudShell** (ícone `>_` no topo do console) — já vem
-> autenticado, não precisa criar Access Key. Suba os arquivos por
-> *Actions > Upload file*.
+Depois que o tópico está criado e a assinatura **Confirmada**, faltam 3 passos
+para o script disparar os e-mails de verdade.
 
-**Opção A — setup automático (1 comando):**
-```bash
+### 1) Instalar a dependência (boto3)
+```powershell
 pip install boto3
-bash setup_sns.sh seu-email@exemplo.com   # cria tópico + assinatura e mostra o ARN
-# confirme o e-mail, depois:
-export SNS_TOPIC_ARN="arn:aws:sns:us-east-2:SEU_ID:alertas-farmtech"
-export AWS_REGION="us-east-2"
-python alerta_sensor_sns.py
+# se "pip" não for reconhecido:
+python -m pip install boto3
 ```
 
-**Opção B — manual (passos 1 a 5 acima):** depois de copiar o ARN:
-```bash
-export SNS_TOPIC_ARN="arn:aws:sns:us-east-2:SEU_ID:alertas-farmtech"
-export AWS_REGION="us-east-2"
-python alerta_sensor_sns.py
+### 2) Configurar as credenciais do Learner Lab
+As credenciais do Learner Lab são **temporárias** e mudam a cada sessão do lab.
+
+1. Na página do lab (Canvas), clique em **"AWS Details"** (ao lado do Start Lab).
+2. Em **AWS CLI**, clique em **Show** — aparece um bloco assim:
+   ```
+   [default]
+   aws_access_key_id=ASIA...
+   aws_secret_access_key=...
+   aws_session_token=...
+   ```
+3. Copie o bloco inteiro e cole no arquivo **`C:\Users\<seu_usuario>\.aws\credentials`**
+   (crie o arquivo/pasta se não existir).
+
+> 💡 Toda vez que reabrir o lab, repita este passo — as credenciais expiram
+> junto com a sessão.
+
+### 3) Definir as variáveis e rodar
+```powershell
+cd AWS_Mensageria
+$env:SNS_TOPIC_ARN = "arn:aws:sns:us-east-1:891524684430:alertas-farmtech"
+$env:AWS_REGION = "us-east-1"
+python alerta_sensor_sns.py --csv leituras_exemplo.csv
 ```
+
+> Troque o **número da conta** (`891524684430`) pelo ID que aparece no seu ARN
+> (Parte 1, passo 5).
+
+**Erros comuns:**
+
+| Mensagem | Causa | Solução |
+|---|---|---|
+| `ERRO: boto3 nao instalado` | faltou o boto3 | rode o passo 1 (`pip install boto3`) |
+| `Unable to locate credentials` | faltou o `.aws\credentials` | rode o passo 2 (AWS Details) |
+| `security token ... expired/invalid` | sessão do lab expirou | reabra o lab e cole as credenciais novas |
+| `NotFound ... Topic does not exist` | região ou ARN errados | confira que `AWS_REGION` e o ARN são `us-east-1` |
+
+> 💡 **Alternativa (sem instalar nada):** o **AWS CloudShell** (ícone `>_` no
+> topo do console) já vem autenticado. Suba os arquivos por *Actions > Upload
+> file* e rode os mesmos comandos em `bash` (`export VAR=...` no lugar de
+> `$env:VAR = ...`).
 
 ---
 
@@ -178,50 +220,41 @@ Depois abra `assets/previa-email.html` no navegador e tire o print da
 
 ```
 FarmTech Solutions - Monitor de sensores (Fase 3) + Amazon SNS
-Regiao AWS.........: us-east-2
-Topico SNS.........: arn:aws:sns:us-east-2:...:alertas-farmtech
+Arquivo de leituras: ...\AWS_Mensageria\leituras_exemplo.csv
+Regiao AWS.........: us-east-1
+Topico SNS.........: arn:aws:sns:us-east-1:891524684430:alertas-farmtech
 Modo...............: ENVIO REAL
 ------------------------------------------------------------
->>> Alerta #2 enviado ao SNS. MessageId: 7f3a...e21
->>> Alerta #3 enviado ao SNS. MessageId: a9c0...b48
+>>> Alerta #2 enviado ao SNS. MessageId: 081d4caa-5d23-5318-8714-2e35a4c9c49c
+>>> Alerta #3 enviado ao SNS. MessageId: 6e030b78-c15b-5a9b-b58e-69e738b0b93d
+>>> Alerta #4 enviado ao SNS. MessageId: ac8345c1-d252-5457-95d6-275e2bbe69d0
+>>> Alerta #5 enviado ao SNS. MessageId: 73412b36-4442-51c5-ba3b-49a9bdacb61b
+>>> Alerta #6 enviado ao SNS. MessageId: 1b6147c5-255a-5f1f-8c95-255adcb594fb
+>>> Alerta #7 enviado ao SNS. MessageId: 3c31c0ac-3092-5d07-9ebb-a233c962a245
+>>> Alerta #8 enviado ao SNS. MessageId: def06380-40be-5a37-bed2-011fb94fff3c
 ------------------------------------------------------------
-Leituras analisadas: 3 | Alertas gerados: 2
+Leituras analisadas: 8 | Alertas gerados: 7
 ```
 
+> Execução real no AWS Academy Learner Lab (região `us-east-1`): 7 leituras fora
+> da faixa geraram 7 publicações no SNS, cada uma com seu `MessageId`.
+
+### Caixa de entrada do funcionário (e-mails reais recebidos)
+
+Os 7 alertas chegaram por e-mail, enviados pelo **AWS Notifications** (Amazon SNS):
+
 <p align="center">
-  <img src="assets/05-execucao-script.png" alt="Execução do script publicando no SNS" width="90%">
+  <img src="assets/awsgeral.jpeg" alt="Caixa de entrada com os 7 alertas do SNS" width="60%">
 </p>
 
-### E-mail de alerta recebido pelo funcionário
+### E-mail de alerta aberto (problema + ação corretiva)
 
-```
-ALERTA FarmTech Solutions - Leitura de sensor fora do padrao
-=======================================================
-Data/hora......: 07/06/2026 12:33:30
-Leitura no.....: 2
-Cultura (label): rice
-
-Problemas detectados:
-  - pH do solo ALTO: 7.04 (ideal <= 7.0)
-
-ACOES CORRETIVAS RECOMENDADAS (atencao, equipe de campo):
-  1) Solo alcalino: aplicar enxofre/materia organica para baixar o pH.
-
-Valores lidos:
-  N=85 | P=58 | K=41
-  Temp=21.77C | Umidade=80.32% | pH=7.04 | Chuva=226.66mm
-
--- Mensagem automatica enviada via Amazon SNS (infra AWS - Fase 5) --
-```
-
-Prévia da caixa de entrada do funcionário com os alertas e suas ações
-corretivas (7 leituras fora da faixa, cada uma com a ação recomendada):
+Cada e-mail traz o problema detectado e a ação corretiva recomendada para a
+equipe de campo:
 
 <p align="center">
-  <img src="assets/emailrecebido01.jpeg" alt="Alertas de e-mail - parte 1" width="90%">
-  <img src="assets/emailrecebido02.jpeg" alt="Alertas de e-mail - parte 2" width="90%">
-  <img src="assets/emailrecebido03.jpeg" alt="Alertas de e-mail - parte 3" width="90%">
-  <img src="assets/emailrecebido04.jpeg" alt="Alertas de e-mail - parte 4" width="90%">
+  <img src="assets/aws2.jpeg" alt="Alerta #2 - milho - Nitrogênio baixo" width="90%">
+  <img src="assets/aws3.jpeg" alt="Alerta #3 - soja - Fósforo baixo" width="90%">
 </p>
 
 ---
